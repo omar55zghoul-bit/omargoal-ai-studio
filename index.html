@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827"><title>OmarGoal AI Studio</title>
+<style>
+:root{--bg:#0b1220;--panel:#121e30;--panel2:#1a2940;--line:#2b3b55;--txt:#f5f7fb;--muted:#a8b5c8;--green:#32d399;--blue:#5aa7ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;padding-bottom:90px}
+header{padding:22px 16px 16px;background:linear-gradient(135deg,#14243a,#0b1220);border-bottom:1px solid var(--line)}
+h1{font-size:23px;margin:0 0 6px}header p{margin:0;color:var(--muted);font-size:13px}
+main{max-width:850px;margin:auto;padding:14px}
+nav{position:sticky;top:0;z-index:5;display:flex;gap:7px;overflow:auto;background:#0b1220;padding:10px 12px;border-bottom:1px solid var(--line)}
+nav button{white-space:nowrap;border:1px solid var(--line);background:var(--panel);color:var(--txt);padding:10px 13px;border-radius:12px}
+nav button.active{background:var(--green);color:#062317;border-color:var(--green);font-weight:700}
+section{display:none}section.active{display:block}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin:0 0 13px}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:14px 0 8px}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 6px}
+input,textarea,select{width:100%;background:#091321;color:var(--txt);border:1px solid var(--line);border-radius:11px;padding:12px;font:inherit;font-size:15px}
+textarea{min-height:115px;resize:vertical;line-height:1.6}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:120px}
+button.action{background:var(--green);color:#052419;border:0;border-radius:11px;padding:12px 15px;font-weight:700;margin-top:10px}
+button.secondary{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-top:10px}
+small,.hint{color:var(--muted);font-size:12px;line-height:1.6}
+video{width:100%;max-height:55vh;background:#000;border-radius:12px;margin-top:10px}
+canvas{width:100%;background:#101827;border-radius:12px;display:block}
+.preview-wrap{max-width:420px;margin:auto}
+.pill{display:inline-block;border:1px solid var(--line);padding:5px 9px;border-radius:99px;color:var(--muted);font-size:11px;margin:2px}
+#status{position:fixed;bottom:12px;left:12px;right:12px;background:#17283c;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;display:none;z-index:10}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
+</style>
+</head>
+<body>
+<header><h1>⚽ OmarGoal AI Studio</h1><p>استوديو صناعة الفيديو من الآيفون — يعمل من Safari</p><div><span class="pill">9:16 Shorts</span><span class="pill">16:9 YouTube</span><span class="pill">مجاني</span></div></header>
+<nav id="tabs">
+<button class="active" data-tab="script">النص الرياضي</button><button data-tab="srt">ترجمة SRT</button><button data-tab="video">الفيديو</button><button data-tab="thumb">الغلاف</button><button data-tab="voice">الصوت</button><button data-tab="publish">النشر</button>
+</nav>
+<main>
+<section id="script" class="active">
+<div class="card"><h2>كاتب النص الرياضي</h2><label>فكرة الفيديو أو النص الأصلي</label><textarea id="idea" placeholder="اكتب فكرة الفيديو أو الصق النص هنا..."></textarea><label>نوع المحتوى</label><select id="tone"><option>تعليق رياضي باللهجة الأردنية</option><option>مقدمة حماسية</option><option>قصة لاعب</option><option>تحليل لقطة</option><option>مقارنة لاعبين</option></select><button class="action" onclick="makePrompt()">جهّز طلب الصياغة</button><button class="secondary" onclick="copyText('promptout')">نسخ النص والطلب</button><textarea id="promptout" placeholder="سيظهر هنا طلب جاهز يمكنك نسخه إلى ChatGPT لإعادة الصياغة."></textarea><p class="hint">هذه النسخة لا تدّعي وجود نموذج ذكاء اصطناعي مدمج؛ زر الطلب يجهّز تعليمات واضحة لاستخدامها مع ChatGPT.</p></div>
+</section>
+<section id="srt">
+<div class="card"><h2>إنشاء ملف ترجمة SRT</h2><label>النص — كل جملة في سطر</label><textarea id="captions" placeholder="أهلاً فيكم&#10;اليوم بنحكي عن لقطة تاريخية&#10;شوفوا شو صار!"></textarea><div class="row"><div><label>مدة الفيديو بالثواني</label><input id="duration" type="number" min="1" value="30"></div><div><label>عدد الكلمات التقريبي لكل مقطع</label><input id="words" type="number" min="2" value="8"></div></div><button class="action" onclick="generateSrt()">إنشاء SRT</button><button class="secondary" onclick="downloadText('srtout','OmarGoal-subtitles.srt','text/plain')">تنزيل SRT</button><textarea id="srtout" placeholder="ملف SRT سيظهر هنا ويمكنك تعديله."></textarea><small>التوقيت موزع بالتساوي كتوقيت مبدئي؛ راجعه مع الصوت قبل النشر.</small></div>
+</section>
+<section id="video">
+<div class="card"><h2>معاينة الفيديو</h2><label>اختر فيديو من صورك / الملفات</label><input id="videoFile" type="file" accept="video/*"><video id="player" controls playsinline></video><div class="row"><div><label>المقاس المستهدف</label><select id="ratio"><option value="9:16">عمودي 9:16 — Shorts / Reels</option><option value="16:9">أفقي 16:9 — YouTube</option></select></div><div><label>ملاحظات المونتاج</label><input id="editnotes" placeholder="مثلاً: قص البداية وإضافة تعليق"></div></div><p class="hint">المعاينة تعمل محلياً على الجهاز. القصّ والتصدير النهائي للفيديو غير مدمجين بعد في هذه النسخة.</p></div>
+</section>
+<section id="thumb">
+<div class="card"><h2>مصمم غلاف الفيديو</h2><label>صورة الخلفية</label><input id="imageFile" type="file" accept="image/*"><label>عنوان الغلاف</label><input id="thumbText" value="لقطة مستحيل تصدقها!"><label>لون النص</label><select id="textColor"><option value="#ffffff">أبيض</option><option value="#ffe600">أصفر</option><option value="#ff4545">أحمر</option></select><div class="row"><button class="secondary" onclick="drawThumb('9:16')">تصميم عمودي 9:16</button><button class="secondary" onclick="drawThumb('16:9')">تصميم أفقي 16:9</button></div><div class="preview-wrap"><canvas id="thumbCanvas" width="720" height="1280"></canvas></div><button class="action" onclick="downloadThumb()">تنزيل الغلاف PNG</button><p class="hint">أضف صورة من جهازك، ثم عدّل العنوان. لا تضع شعارات أندية أو صور لاعبين إلا إذا كان لديك حق استخدامها.</p></div>
+</section>
+<section id="voice">
+<div class="card"><h2>التعليق الصوتي</h2><label>نص التعليق لقراءته</label><textarea id="voiceText" placeholder="اكتب نص التعليق الصوتي..."></textarea><div class="row"><button class="action" onclick="speak()">استمع للنص</button><button class="secondary" onclick="stopSpeak()">إيقاف القراءة</button></div><h3>تسجيل صوتك</h3><button class="action" id="recordBtn" onclick="recordVoice()">بدء التسجيل</button><audio id="audioOut" controls style="width:100%;margin-top:12px;display:none"></audio><button class="secondary" onclick="downloadRecording()">تنزيل التسجيل</button><p class="hint">القراءة تعتمد على الأصوات المتاحة في iOS. التسجيل يحتاج إذن الميكروفون وقد يتطلب فتح الموقع عبر HTTPS.</p></div>
+</section>
+<section id="publish">
+<div class="card"><h2>تجهيز النشر</h2><label>عنوان الفيديو</label><input id="pubTitle" placeholder="اكتب عنواناً جذاباً"><label>الوصف</label><textarea id="pubDesc" placeholder="وصف الفيديو..."></textarea><label>الهاشتاغات</label><input id="hashtags" placeholder="#Football #Messi #Shorts"><button class="action" onclick="saveProject()">حفظ المشروع على هذا الجهاز</button><button class="secondary" onclick="exportProject()">تصدير بيانات المشروع JSON</button><button class="secondary" onclick="copyPublish()">نسخ العنوان والوصف والهاشتاغات</button><p class="hint">الحفظ محلي داخل Safari على هذا الجهاز. لا ترفع ملفاتك إلى أي خادم.</p></div>
+<div class="card"><h3>حالة الأدوات</h3><p>✅ كتابة النص وتجهيز طلب الذكاء الاصطناعي<br>✅ إنشاء وتعديل SRT<br>✅ معاينة الفيديو محلياً<br>✅ تصميم غلاف وتنزيل PNG<br>✅ قراءة النص وتسجيل الصوت<br>✅ تجهيز بيانات النشر وحفظ المشروع</p><p class="hint">⚠️ لا يوجد حالياً محرّك مونتاج كامل لتقطيع الفيديو وتصديره MP4، ولا ترجمة آلية مستقلة داخل الموقع. هذه تحتاج محرك معالجة متوافقاً مع Safari أو خادماً خاصاً.</p></div>
+</section>
+</main><footer>OmarGoal AI Studio · نسخة تجريبية للهاتف · ملفاتك تبقى على جهازك</footer><div id="status"></div>
+<script>
+const $=id=>document.getElementById(id);
+function note(t){let s=$('status');s.textContent=t;s.style.display='block';setTimeout(()=>s.style.display='none',2600)}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,section').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')});
+function makePrompt(){let t=$('idea').value.trim();$('promptout').value=`حوّل النص التالي إلى تعليق رياضي باللهجة الأردنية الطبيعية، بدون إضافة معلومات غير موجودة وبدون حذف أي حدث. اجعل الجمل قصيرة ومناسبة لفيديو ${$('ratio').value}، وحافظ على الأسماء والأرقام:\n\n${t}`;note('تم تجهيز الطلب');}
+function copyText(id){$(id).select();document.execCommand('copy');note('تم النسخ');}
+function stamp(s){let h=Math.floor(s/3600),m=Math.floor(s%3600/60),sec=Math.floor(s%60),ms=Math.round((s-Math.floor(s))*1000);return [h,m,sec].map(x=>String(x).padStart(2,'0')).join(':')+','+String(ms).padStart(3,'0')}
+function generateSrt(){let lines=$('captions').value.split(/\n+/).map(x=>x.trim()).filter(Boolean);if(!lines.length)return note('أدخل النص أولاً');let d=Math.max(1,+$('duration').value||30),step=d/lines.length;$('srtout').value=lines.map((x,i)=>`${i+1}\n${stamp(i*step)} --> ${stamp((i+1)*step)}\n${x}`).join('\n\n');note('تم إنشاء SRT');}
+function downloadText(id,name,type){let blob=new Blob([$(id).value],{type});downloadBlob(blob,name)}
+function downloadBlob(blob,name){let a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+let videoURL=null;$('videoFile').onchange=e=>{let f=e.target.files[0];if(!f)return;if(videoURL)URL.revokeObjectURL(videoURL);videoURL=URL.createObjectURL(f);$('player').src=videoURL};
+let thumbImg=null;$('imageFile').onchange=e=>{let f=e.target.files[0];if(!f)return;thumbImg=new Image();thumbImg.onload=()=>drawThumb($('ratio').value);thumbImg.src=URL.createObjectURL(f)};
+function drawThumb(r){let c=$('thumbCanvas'),ctx=c.getContext('2d');c.width=r==='9:16'?720:1280;c.height=r==='9:16'?1280:720;ctx.fillStyle='#14243a';ctx.fillRect(0,0,c.width,c.height);if(thumbImg){let scale=Math.max(c.width/thumbImg.width,c.height/thumbImg.height),w=thumbImg.width*scale,h=thumbImg.height*scale;ctx.drawImage(thumbImg,(c.width-w)/2,(c.height-h)/2,w,h)}ctx.fillStyle='rgba(0,0,0,.48)';ctx.fillRect(0,c.height*.58,c.width,c.height*.42);let text=$('thumbText').value||'OmarGoal';ctx.textAlign='center';ctx.textBaseline='middle';ctx.direction='rtl';ctx.font=`900 ${Math.round(c.width*.075)}px Tahoma,Arial`;ctx.lineWidth=12;ctx.strokeStyle='#111';wrapText(ctx,text,c.width*.88,c.height*.78,c.width*.82,Math.round(c.width*.105));ctx.fillStyle=$('textColor').value;wrapText(ctx,text,c.width*.88,c.height*.78,c.width*.82,Math.round(c.width*.105),true); }
+function wrapText(ctx,text,x,y,maxWidth,lineH,fill=false){let words=text.split(' '),lines=[],line='';for(let w of words){let test=line?line+' '+w:w;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);let start=y-(lines.length-1)*lineH/2;lines.forEach((l,i)=>{if(fill)ctx.fillText(l,x,start+i*lineH);else ctx.strokeText(l,x,start+i*lineH)})}
+$('thumbText').oninput=()=>drawThumb($('ratio').value);$('textColor').onchange=()=>drawThumb($('ratio').value);
+function downloadThumb(){ $('thumbCanvas').toBlob(b=>downloadBlob(b,'OmarGoal-thumbnail.png'))}
+function speak(){if(!('speechSynthesis'in window))return note('القراءة الصوتية غير مدعومة في هذا المتصفح');speechSynthesis.cancel();let u=new SpeechSynthesisUtterance($('voiceText').value);u.lang='ar';speechSynthesis.speak(u)}
+function stopSpeak(){if('speechSynthesis'in window)speechSynthesis.cancel()}
+let recorder=null,chunks=[],recordedBlob=null;
+async function recordVoice(){if(recorder&&recorder.state==='recording'){recorder.stop();$('recordBtn').textContent='بدء التسجيل';return}try{let stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];recorder=new MediaRecorder(stream);recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};recorder.onstop=()=>{recordedBlob=new Blob(chunks,{type:recorder.mimeType||'audio/mp4'});$('audioOut').src=URL.createObjectURL(recordedBlob);$('audioOut').style.display='block';stream.getTracks().forEach(t=>t.stop());note('انتهى التسجيل')};recorder.start();$('recordBtn').textContent='إيقاف التسجيل';note('التسجيل يعمل')}catch(e){note('تعذر الوصول للميكروفون؛ تأكد من إذن Safari وHTTPS')}}
+function downloadRecording(){if(!recordedBlob)return note('سجّل صوتك أولاً');downloadBlob(recordedBlob,recordedBlob.type.includes('mp4')?'OmarGoal-voice.m4a':'OmarGoal-voice.webm')}
+function project(){return {idea:$('idea').value,tone:$('tone').value,captions:$('captions').value,srt:$('srtout').value,title:$('pubTitle').value,description:$('pubDesc').value,hashtags:$('hashtags').value,ratio:$('ratio').value,notes:$('editnotes').value}}
+function saveProject(){try{localStorage.setItem('omargoal-project',JSON.stringify(project()));note('تم حفظ المشروع في Safari')}catch(e){note('تعذر الحفظ؛ مساحة التخزين قد تكون ممتلئة')}}
+function exportProject(){downloadBlob(new Blob([JSON.stringify(project(),null,2)],{type:'application/json'}),'OmarGoal-project.json')}
+function copyPublish(){let p=project(),s=p.title+'\n\n'+p.description+'\n\n'+p.hashtags;navigator.clipboard?.writeText(s).then(()=>note('تم النسخ')).catch(()=>note('انسخ النص يدوياً'))}
+try{let p=JSON.parse(localStorage.getItem('omargoal-project')||'null');if(p){$('idea').value=p.idea||'';$('tone').value=p.tone||$('tone').value;$('captions').value=p.captions||'';$('srtout').value=p.srt||'';$('pubTitle').value=p.title||'';$('pubDesc').value=p.description||'';$('hashtags').value=p.hashtags||'';$('ratio').value=p.ratio||'9:16';$('editnotes').value=p.notes||''}}catch(e){}
+drawThumb('9:16');
+</script></body></html>
